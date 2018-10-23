@@ -18,47 +18,19 @@ export class SideNavComponent implements OnInit {
 
     ngOnInit(): void {
         console.log(this.electronService.getLocale());
-        /*if (this.electronService.isElectron) {
-            this.electronService.ipcRenderer.on('toggle-notifications', () => {
-                this._ngZone.run(() => {
-                    this.showNotificationButton = !this.showNotificationButton;
-                });
-            });
-        }*/
+
     }
 
     notify() {
         console.log("test");
         //console.log(Notification.isSupported())
         console.log(Notification.requestPermission());
-        Notification.requestPermission().then(() => {
-            console.log("granted");
-            var myNotification = new Notification("Bob: Hi / Are you free this afternoon?", { 'body': 'chat_Bob' });
-        });
-        this.electronService.testnotify();
-        this.notificationService.notifyNotifier();
-        new Notification("Bob: Hi / Are you free this afternoon?", { body: 'chat_Bob' });
-        /*
-        this.electronService.publishNotification();
-        this.electronService.notify(
-            'My notification',
-            'Hello, there!'
-          );
-        */
-
-        /*let notification = this.notificationService.notify('Miou!',
-            `This is, miou!`, `http://placekitten.com/100/100`);
+        var notification = this.notificationService.notify("Electron", "This is a notification")
+        
         notification.onclick = () => {
-            // do something here
-        };*/
-
-        //app.setAppUserModelId("appid");
-        /*
-        let nt = new Notification({
-            title: "test",
-            body: "body"
-        });
-        nt.show();
-        */
+            console.log("Notification clicked");
+        };
+        
+        
     }
 }

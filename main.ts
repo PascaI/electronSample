@@ -1,7 +1,9 @@
-import { app, autoUpdater, BrowserWindow, dialog, screen, Tray, Menu } from 'electron';
+import { app, autoUpdater, BrowserWindow, dialog, screen, Tray, Menu, TouchBar, nativeImage } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
+const { TouchBarLabel, TouchBarButton, TouchBarSpacer } = TouchBar;
 //import * as notifier from 'node-notifier';
+const rootDir = path.join(__dirname, '/');
 
 let win, serve;
 const args = process.argv.slice(1);
@@ -52,7 +54,12 @@ try {
   // This method will be called when Electron has finished
   // initialization and is ready to create browser windows.
   // Some APIs can only be used after this event occurs.
-  app.on('ready', createWindow);
+  app.on('ready', () => {
+    createWindow();
+    createTouchBar();
+    createDockMenu();
+    createTrayMenu();
+  });
   /*let tray = null
 app.on('ready', () => {
   createWindow
@@ -97,34 +104,23 @@ app.on('ready', () => {
       title: 'Application Update',
       message: process.platform === 'win32' ? releaseNotes : releaseName,
       detail: 'A new version has been downloaded. Restart the application to apply the updates.'
-    }
+    };
 
     dialog.showMessageBox(dialogOpts, (response) => {
-      if (response === 0) autoUpdater.quitAndInstall()
-    })
-  })
+      if (response === 0) {
+        autoUpdater.quitAndInstall();
+      }
+    });
+  });
 
   autoUpdater.on('error', message => {
     console.error('There was a problem updating the application')
-    console.error(message)
-  })
+    console.error(message);
+  });
 
   setInterval(() => {
-    autoUpdater.checkForUpdates()
-  }, 216000000)
-
-  /*notifier.notify(
-    {
-      title: 'My awesome title',
-      message: 'Hello from node, Mr. User!',
-      sound: true, // Only Notification Center or Windows Toasters
-      wait: true // Wait with callback, until user action is taken against notification
-    },
-    function(err, response) {
-      console.log(err, response);
-      // Response is response from notification
-    }
-  );*/
+    autoUpdater.checkForUpdates();
+  }, 216000000);
 
 } catch (e) {
   // Catch Error
@@ -133,8 +129,143 @@ app.on('ready', () => {
 }
 
 function checkForUpdates() {
-  const server = 'https://your-deployment-url.com'
-  const feed = `${server}/update/${process.platform}/${app.getVersion()}`
+  const server = 'https://your-deployment-url.com';
+  const feed = `${server}/update/${process.platform}/${app.getVersion()}`;
 
   //autoUpdater.setFeedURL(feed)
 }
+
+function addTouchBar() {
+
+}
+
+function createTouchBar() {
+  let spinning = false;
+
+  // Reel labels
+  const reel1 = new TouchBarLabel({ label: 'label1' });
+  const reel2 = new TouchBarLabel({ label: 'label2' });
+  const reel3 = new TouchBarLabel({ label: 'label3' });
+
+  // Spin result label
+  const result = new TouchBarLabel({});
+
+  // Spin button
+  const spin = new TouchBarButton({
+    label: '🎰 Spin',
+    backgroundColor: '#7851A9',
+    click: () => {
+      // Ignore clicks if already spinning
+      if (spinning) {
+        return;
+      }
+
+      spinning = true;
+      result.label = '';
+
+      let timeout = 10;
+      const spinLength = 4 * 1000; // 4 seconds
+      const startTime = Date.now();
+
+      const spinReels = () => {
+        updateReels();
+
+        if ((Date.now() - startTime) >= spinLength) {
+          finishSpin();
+        } else {
+          // Slow down a bit on each spin
+          timeout *= 1.1;
+          setTimeout(spinReels, timeout);
+        }
+      };
+
+      spinReels();
+    }
+  });
+
+  const getRandomValue = () => {
+    const values = ['🍒', '💎', '7️⃣', '🍊', '🔔', '⭐', '🍇', '🍀'];
+    return values[Math.floor(Math.random() * values.length)];
+  };
+
+  const updateReels = () => {
+    reel1.label = getRandomValue();
+    reel2.label = getRandomValue();
+    reel3.label = getRandomValue();
+  };
+
+  const finishSpin = () => {
+    const uniqueValues = new Set([reel1.label, reel2.label, reel3.label]).size;
+    if (uniqueValues === 1) {
+      // All 3 values are the same
+      result.label = '💰 Jackpot!';
+      result.textColor = '#FDFF00';
+    } else if (uniqueValues === 2) {
+      // 2 values are the same
+      result.label = '😍 Winner!';
+      result.textColor = '#FDFF00';
+    } else {
+      // No values are the same
+      result.label = '🙁 Spin Again';
+      result.textColor = null;
+    }
+    spinning = false;
+  };
+
+
+  const touchBar = new TouchBar({
+    items: [
+      spin,
+      new TouchBarSpacer({ size: 'large' }),
+      reel1,
+      new TouchBarSpacer({ size: 'small' }),
+      reel2,
+      new TouchBarSpacer({ size: 'small' }),
+      reel3,
+      new TouchBarSpacer({ size: 'large' }),
+      result
+    ]
+  });
+
+  win.setTouchBar(touchBar);
+}
+
+
+function createDockMenu() {
+  const dockMenu = Menu.buildFromTemplate([
+    {
+      label: 'New Window',
+      click() {
+        console.log('New Window');
+      }
+    }, {
+      label: 'New Window with Settings',
+      submenu: [
+        { label: 'Basic' },
+        { label: 'Pro' }
+      ]
+    },
+    { label: 'New Command...' }
+  ]);
+
+  app.dock.setMenu(dockMenu);
+}
+
+function createTrayMenu() {
+  console.log('display tray: ');
+  let tray = null;
+  var iconPath = path.join(__dirname, 'icon.png');
+  let trayIcon = nativeImage.createFromPath(iconPath);
+  trayIcon = trayIcon.resize({ width: 32, height: 32 });
+  tray = new Tray(trayIcon);
+  const contextMenu = Menu.buildFromTemplate([
+    { label: 'Item1', type: 'radio' },
+    { label: 'Item2', type: 'radio' },
+    { label: 'Item3', type: 'radio', checked: true },
+    { label: 'Item4', type: 'radio' }
+  ]);
+  //tray.loadURL
+  tray.setToolTip('This is my application.');
+  tray.setContextMenu(contextMenu);
+}
+

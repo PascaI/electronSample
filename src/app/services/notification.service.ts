@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import * as notifier from 'node-notifier';
+//import * as notifier from 'node-notifier';
 declare const Notification: any;
 
 export interface INotification {
@@ -18,7 +18,7 @@ export class NotificationService {
     }
 
     notifyNotifier() {
-        notifier.notify(
+        /*notifier.notify(
             {
               title: 'My awesome title',
               message: 'Hello from node, Mr. User!',
@@ -30,5 +30,6 @@ export class NotificationService {
               // Response is response from notification
             }
           );
+          */
     }
 }
