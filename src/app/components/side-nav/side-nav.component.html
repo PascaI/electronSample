@@ -1,0 +1,11 @@
+<mat-sidenav class="side-nav" mode="side" opened role="navigation">
+    <mat-nav-list>
+        <a mat-list-item (click)="notify()">First Component</a>
+        <a mat-list-item (click)="notify()">Second Component</a>
+        <a mat-list-item (click)="notify()">Second Component</a>
+        <a mat-list-item (click)="notify()">Second Component</a>
+        <a mat-list-item (click)="notify()">Second Component</a>
+        <a mat-list-item (click)="notify()">Second Component</a>
+    </mat-nav-list>
+    <button *ngIf="showNotificationButton" class="btn btn-primary" (click)="notify()">Notfiy</button>
+</mat-sidenav>

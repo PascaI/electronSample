@@ -19,6 +19,12 @@ import { WebviewDirective } from './directives/webview.directive';
 
 import { AppComponent } from './app.component';
 import { HomeComponent } from './components/home/home.component';
+import { MaterialModule } from './material.module';
+import { DetailComponent } from './components/detail/detail.component';
+import { SideNavComponent } from './components/side-nav/side-nav.components';
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { NotificationService } from './services/notification.service';
+import { DialogService } from './services/dialog.service';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient) {
@@ -29,7 +35,9 @@ export function HttpLoaderFactory(http: HttpClient) {
   declarations: [
     AppComponent,
     HomeComponent,
-    WebviewDirective
+    WebviewDirective,
+    DetailComponent,
+    SideNavComponent
   ],
   imports: [
     BrowserModule,
@@ -42,9 +50,16 @@ export function HttpLoaderFactory(http: HttpClient) {
         useFactory: (HttpLoaderFactory),
         deps: [HttpClient]
       }
-    })
+    }),
+    MaterialModule,
   ],
-  providers: [ElectronService],
+  providers: [
+    ElectronService,
+    NotificationService,
+    DialogService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+
+//platformBrowserDynamic().bootstrapModule(AppModule);

@@ -1,6 +1,7 @@
-import { app, BrowserWindow, screen } from 'electron';
+import { app, autoUpdater, BrowserWindow, dialog, screen, Tray, Menu } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
+//import * as notifier from 'node-notifier';
 
 let win, serve;
 const args = process.argv.slice(1);
@@ -10,13 +11,15 @@ function createWindow() {
 
   const electronScreen = screen;
   const size = electronScreen.getPrimaryDisplay().workAreaSize;
+  app.setAppUserModelId("com.example.app")
 
   // Create the browser window.
   win = new BrowserWindow({
     x: 0,
     y: 0,
-    width: size.width,
-    height: size.height
+    width: 1500,
+    height: 800,
+    minWidth: 100,
   });
 
   if (serve) {
@@ -50,6 +53,25 @@ try {
   // initialization and is ready to create browser windows.
   // Some APIs can only be used after this event occurs.
   app.on('ready', createWindow);
+  /*let tray = null
+app.on('ready', () => {
+  createWindow
+  
+  tray = new BrowserWindow({
+    width: 100,
+    height: 250,
+  });
+  tray = new Tray('C:\\Users\\pascal.keusch\\Pictures\\electron.png')
+  const contextMenu = Menu.buildFromTemplate([
+    { label: 'Item1', type: 'radio' },
+    { label: 'Item2', type: 'radio' },
+    { label: 'Item3', type: 'radio', checked: true },
+    { label: 'Item4', type: 'radio' }
+  ])
+  tray.setToolTip('This is my application.')
+  tray.setContextMenu(contextMenu)
+})
+ */
 
   // Quit when all windows are closed.
   app.on('window-all-closed', () => {
@@ -68,7 +90,51 @@ try {
     }
   });
 
+  autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
+    const dialogOpts = {
+      type: 'info',
+      buttons: ['Restart', 'Later'],
+      title: 'Application Update',
+      message: process.platform === 'win32' ? releaseNotes : releaseName,
+      detail: 'A new version has been downloaded. Restart the application to apply the updates.'
+    }
+
+    dialog.showMessageBox(dialogOpts, (response) => {
+      if (response === 0) autoUpdater.quitAndInstall()
+    })
+  })
+
+  autoUpdater.on('error', message => {
+    console.error('There was a problem updating the application')
+    console.error(message)
+  })
+
+  setInterval(() => {
+    autoUpdater.checkForUpdates()
+  }, 216000000)
+
+  /*notifier.notify(
+    {
+      title: 'My awesome title',
+      message: 'Hello from node, Mr. User!',
+      sound: true, // Only Notification Center or Windows Toasters
+      wait: true // Wait with callback, until user action is taken against notification
+    },
+    function(err, response) {
+      console.log(err, response);
+      // Response is response from notification
+    }
+  );*/
+
 } catch (e) {
   // Catch Error
   // throw e;
+  console.log(e);
+}
+
+function checkForUpdates() {
+  const server = 'https://your-deployment-url.com'
+  const feed = `${server}/update/${process.platform}/${app.getVersion()}`
+
+  //autoUpdater.setFeedURL(feed)
 }
