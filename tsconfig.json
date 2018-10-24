@@ -16,7 +16,15 @@
       "es2016",
       "es2015",
       "dom"
-    ]
+    ],
+    "paths": {
+      "user": [
+        "dist/user"
+      ],
+      "user/*": [
+        "dist/user/*"
+      ]
+    }
   },
   "include": [
     "main.ts",

@@ -1,7 +1,7 @@
-import { app, autoUpdater, BrowserWindow, dialog, screen, Tray, Menu, TouchBar, nativeImage } from 'electron';
+import { app, autoUpdater, BrowserWindow, dialog, screen, Tray, Menu, TouchBar, nativeImage,  } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
-const { TouchBarLabel, TouchBarButton, TouchBarSpacer } = TouchBar;
+const { TouchBarLabel, TouchBarButton, TouchBarSpacer, TouchBarSegmentedControl, TouchBarSlider } = TouchBar;
 //import * as notifier from 'node-notifier';
 const rootDir = path.join(__dirname, '/');
 
@@ -143,9 +143,9 @@ function createTouchBar() {
   let spinning = false;
 
   // Reel labels
-  const reel1 = new TouchBarLabel({ label: 'label1' });
-  const reel2 = new TouchBarLabel({ label: 'label2' });
-  const reel3 = new TouchBarLabel({ label: 'label3' });
+  const reel1 = new TouchBarLabel({ label: '' });
+  const reel2 = new TouchBarLabel({ label: '' });
+  const reel3 = new TouchBarLabel({ label: '' });
 
   // Spin result label
   const result = new TouchBarLabel({});
@@ -212,6 +212,12 @@ function createTouchBar() {
     spinning = false;
   };
 
+  const slider = new TouchBarSlider({
+    value: 10,
+    minValue: 0,
+    maxValue: 100
+  });
+
 
   const touchBar = new TouchBar({
     items: [
@@ -223,7 +229,9 @@ function createTouchBar() {
       new TouchBarSpacer({ size: 'small' }),
       reel3,
       new TouchBarSpacer({ size: 'large' }),
-      result
+      result,
+      new TouchBarSpacer({ size: 'small'}),
+      slider
     ]
   });
 

@@ -1,5 +1,5 @@
 
-import { Component, OnInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ElectronService } from '../../providers/electron.service';
 import { NotificationService } from '../../services/notification.service';
 
@@ -25,12 +25,11 @@ export class SideNavComponent implements OnInit {
         console.log("test");
         //console.log(Notification.isSupported())
         console.log(Notification.requestPermission());
-        var notification = this.notificationService.notify("Electron", "This is a notification")
-        
+        const notification = this.notificationService.notify('Electron', 'This is a notification');
+        console.log(notification);
+
         notification.onclick = () => {
-            console.log("Notification clicked");
+            console.log('Notification clicked');
         };
-        
-        
     }
 }
